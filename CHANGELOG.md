@@ -12,11 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `ExecuteSafelyOptions`: `onError` is now `onDomainError`, `onThrown` is now
-  `onUnexpected`, and `mapThrownToError` is now `mapUnexpectedToDomainError`.
-- `Either`: failed branch is `isFailed` / `domainError` / `Either.domainError`.
-  Successful branch is `isExecuted` / `executed` / `Either.executed`.
-- `fold` now takes `ifFailed` and `ifExecuted`. `when` and `map` use
-  `domainError` and `executed`.
+  `onRawError`, and `mapThrownToError` is now `mapRawErrorToDomain`.
+  The options type is no longer generic and no longer extends `Equatable`.
+- `DomainError.error` is now `rawError`.
+- `Either` is sealed. The error branch is `isErr` / `errValue` / `Either.err`.
+  The success branch is `isOk` / `successValue` / `Either.ok`.
+- `fold` now takes `ifErr` and `ifOk`. `when` is removed. `map` maps the
+  success value and leaves an error unchanged.
+- `domainError` is available only on `Result<T>`, not on a generic `Either`.
+- `executeSafely` now returns `Future<Result<T>>`. `FutureOrResult` is removed.
 
 ## [1.0.0] - 2026-08-30
 

@@ -11,14 +11,14 @@ void main() {
 
     test('string representation uses nested error type identifier', () {
       const error = _StableDomainError(
-        error: _NestedDomainError(message: 'nested'),
+        rawError: _NestedDomainError(message: 'nested'),
       );
 
       expect(error.toString(), 'StableDomainError(NestedDomainError)');
     });
 
     test('string representation does not depend on wrapped error runtimeType', () {
-      final error = _StableDomainError(error: _OpaqueError());
+      final error = _StableDomainError(rawError: _OpaqueError());
 
       expect(error.toString(), 'StableDomainError(opaque details)');
       expect(error.toString(), isNot(contains('_OpaqueError')));
@@ -33,22 +33,22 @@ void main() {
 }
 
 final class _StableDomainError extends DomainError {
-  const _StableDomainError({
-    super.message,
-    super.error,
-  });
-
   @override
   String get typeIdentifier => 'StableDomainError';
+
+  const _StableDomainError({
+    super.message,
+    super.rawError,
+  });
 }
 
 final class _NestedDomainError extends DomainError {
+  @override
+  String get typeIdentifier => 'NestedDomainError';
+
   const _NestedDomainError({
     super.message,
   });
-
-  @override
-  String get typeIdentifier => 'NestedDomainError';
 }
 
 final class _OpaqueError {

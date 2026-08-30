@@ -4,6 +4,7 @@
 /// convert thrown errors through `executeSafely`.
 library;
 
-export 'src/entities/_barrel.dart';
-export 'src/features/_barrel.dart';
-export 'src/shared/_barrel.dart';
+export 'src/domain_error.dart';
+export 'src/either.dart';
+export 'src/execute_safely.dart';
+export 'src/result.dart';

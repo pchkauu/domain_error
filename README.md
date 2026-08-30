@@ -3,8 +3,9 @@
 Turn thrown errors into values you can fold.
 
 A domain error is a `DomainError`. An outcome is a `Result<T>`:
-`Either<DomainError, T>`. `executeSafely` runs a function and returns that
-result.
+`Either<DomainError, T>`. On a `Result`, `domainError` is the failed
+`DomainError`. A generic `Either` uses `errValue`. `executeSafely` runs a
+function and returns that result.
 
 ## Install
 
@@ -24,7 +25,7 @@ import 'dart:async';
 import 'package:domain_error/domain_error.dart';
 
 sealed class OrderError extends DomainError {
-  const OrderError({super.message, super.error, super.stackTrace});
+  const OrderError({super.message, super.rawError, super.stackTrace});
 
   @override
   String get typeIdentifier => 'OrderError';
@@ -45,7 +46,7 @@ final class OrderTimeoutError extends OrderError {
 }
 
 final class OrderUnavailableError extends OrderError {
-  const OrderUnavailableError({super.error, super.stackTrace});
+  const OrderUnavailableError({super.rawError, super.stackTrace});
 
   @override
   String get typeIdentifier => 'OrderUnavailableError';
@@ -63,27 +64,27 @@ final result = await executeSafely<Order>(
     return loadOrder(id: id);
   },
   options: ExecuteSafelyOptions(
-    mapUnexpectedToDomainError: (error, stackTrace) {
-      if (error is TimeoutException) {
+    mapRawErrorToDomain: (rawError, stackTrace) {
+      if (rawError is TimeoutException) {
         return const OrderTimeoutError();
       } else {
-        return OrderUnavailableError(error: error, stackTrace: stackTrace);
+        return OrderUnavailableError(rawError: rawError, stackTrace: stackTrace);
       }
     },
-    onDomainError: (error, stackTrace) { /* log */ },
-    onUnexpected: (error, stackTrace) { /* log */ },
+    onDomainError: (domainError, stackTrace) { /* log */ },
+    onRawError: (rawError, stackTrace) { /* log */ },
   ),
 );
 
 result.fold(
   (domainError) => print(domainError.typeIdentifier),
-  (executed) => print(executed.title),
+  (successValue) => print(successValue.title),
 );
 ```
 
 If the function throws a `DomainError`, you get that same object.
-If it throws anything else, you get what `mapUnexpectedToDomainError` returns.
-`onDomainError` and `onUnexpected` only observe. They do not change the result.
+If it throws anything else, you get what `mapRawErrorToDomain` returns.
+`onDomainError` and `onRawError` only observe. They do not change the result.
 
 Runnable sample: [`example/domain_error_example.dart`](example/domain_error_example.dart).
 
