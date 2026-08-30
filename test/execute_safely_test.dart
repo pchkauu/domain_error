@@ -57,6 +57,62 @@ void main() {
       expect(observedRawError, isA<StateError>());
     });
   });
+
+  group('executeSafelySync', () {
+    test('returns the successful value', () {
+      final result = executeSafelySync<int>(
+        () => 7,
+        options: ExecuteSafelySyncOptions(
+          mapRawErrorToDomain: (rawError, stackTrace) => _TestDomainError(rawError: rawError),
+        ),
+      );
+
+      expect(result.isOk, isTrue);
+      expect(result.successValue, 7);
+    });
+
+    test('returns thrown DomainError', () {
+      const error = _TestDomainError(message: 'handled error');
+      DomainError? observedDomainError;
+
+      final result = executeSafelySync<void>(
+        () => throw error,
+        options: ExecuteSafelySyncOptions(
+          mapRawErrorToDomain: (rawError, stackTrace) => _TestDomainError(rawError: rawError),
+          onDomainError: (domainError, stackTrace) {
+            observedDomainError = domainError;
+          },
+        ),
+      );
+
+      expect(result.isErr, isTrue);
+      expect(result.domainError, error);
+      expect(observedDomainError, error);
+    });
+
+    test('maps unexpected throw to DomainError', () {
+      Object? observedRawError;
+
+      final result = executeSafelySync<void>(
+        () => throw StateError('boom'),
+        options: ExecuteSafelySyncOptions(
+          mapRawErrorToDomain: (rawError, stackTrace) => _TestDomainError(
+            message: 'mapped error',
+            rawError: rawError,
+            stackTrace: stackTrace,
+          ),
+          onRawError: (rawError, stackTrace) {
+            observedRawError = rawError;
+          },
+        ),
+      );
+
+      expect(result.isErr, isTrue);
+      expect(result.domainError.typeIdentifier, 'TestDomainError');
+      expect(result.domainError.message, 'mapped error');
+      expect(observedRawError, isA<StateError>());
+    });
+  });
 }
 
 final class _TestDomainError extends DomainError {
