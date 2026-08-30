@@ -1,1 +1,1 @@
-export 'failure/_barrel.dart';
+export 'domain_error/_barrel.dart';

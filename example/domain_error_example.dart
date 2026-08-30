@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:failure/failure.dart';
+import 'package:domain_error/domain_error.dart';
 
 /// Loads an order and prints `value` / `failure` for typical outcomes.
 void main() async {
@@ -17,17 +17,17 @@ void main() async {
         return loadOrder(id: id);
       },
       options: ExecuteSafelyOptions(
-        mapErrorToFailure: (error, stackTrace) {
+        mapThrownToError: (error, stackTrace) {
           if (error is TimeoutException) {
             return const OrderTimeoutError();
           } else {
             return OrderUnavailableError(error: error, stackTrace: stackTrace);
           }
         },
-        onFailure: (failure, stackTrace) async {
-          print('$op ${failure.typeIdentifier} ${failure.stackTrace}');
-        },
         onError: (error, stackTrace) async {
+          print('$op ${error.typeIdentifier} ${error.stackTrace}');
+        },
+        onThrown: (error, stackTrace) async {
           print('$op $error $stackTrace');
         },
       ),
@@ -42,7 +42,7 @@ void main() async {
   }
 }
 
-/// Reads an order or throws a domain [Failure] / unexpected error.
+/// Reads an order or throws a domain [DomainError] / unexpected error.
 Order loadOrder({required String id}) {
   if (id.trim().isEmpty) {
     throw const OrderIdEmptyError();
@@ -66,7 +66,7 @@ final class Order {
   });
 }
 
-sealed class OrderError extends Failure {
+sealed class OrderError extends DomainError {
   @override
   String get typeIdentifier => 'OrderError';
 

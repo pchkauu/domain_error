@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 
-/// Expected domain or application failure.
+/// Expected domain or application error.
 ///
-/// Feature error roots extend [Failure] in their own libraries. Keep this type
-/// as an `abstract class` so those roots can live outside this file.
+/// Feature error roots extend [DomainError] in their own libraries. Keep this
+/// type as an `abstract class` so those roots can live outside this file.
 ///
 /// [typeIdentifier] stays stable after obfuscation and is the primary label
 /// for logs and error reporting.
-abstract class Failure extends Equatable implements Exception {
-  /// Stable identifier of the concrete failure type.
+abstract class DomainError extends Equatable implements Exception {
+  /// Stable identifier of the concrete error type.
   ///
   /// Used to display the error after obfuscation, for example in Sentry.
   /// Example: `typeIdentifier => 'SignatureError'`.
@@ -23,8 +23,8 @@ abstract class Failure extends Equatable implements Exception {
   /// Optional stack trace of the technical cause.
   final StackTrace? stackTrace;
 
-  /// Creates a [Failure].
-  const Failure({
+  /// Creates a [DomainError].
+  const DomainError({
     this.message,
     this.error,
     this.stackTrace,
@@ -57,7 +57,7 @@ abstract class Failure extends Equatable implements Exception {
     if (cause == null) {
       return null;
     }
-    if (cause is Failure) {
+    if (cause is DomainError) {
       return cause.typeIdentifier;
     }
 
