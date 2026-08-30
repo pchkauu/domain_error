@@ -1,5 +1,7 @@
 # domain_error
 
+![The complete journey from method outcome through executeSafely to fold](assets/overview.png)
+
 Turn thrown errors into values you can fold.
 
 A domain error is a `DomainError`. An outcome is a `Result<T>`:
@@ -7,17 +9,23 @@ A domain error is a `DomainError`. An outcome is a `Result<T>`:
 `DomainError`. A generic `Either` uses `errValue`. `executeSafely` and
 `executeSafelySync` run a function and return that result.
 
+## Model errors
+
+![DomainError fields, feature hierarchy, and stable type identifiers](assets/flow.png)
+
+One sealed error root per feature. Set `typeIdentifier` yourself. It stays
+readable after obfuscation.
+
 ## Install
 
 ```yaml
 dependencies:
-  domain_error: ^2.1.0
+  domain_error: ^2.1.1
 ```
 
 ## Use
 
-One sealed error root per feature. Set `typeIdentifier` yourself. It stays
-readable after obfuscation.
+![Async and sync APIs, Either branches, fold, and map behavior](assets/fold.png)
 
 ```dart
 import 'dart:async';
