@@ -18,34 +18,18 @@ abstract class DomainError extends Equatable implements Exception {
   final String? message;
 
   /// Optional technical cause.
-  final Object? error;
+  final Object? rawError;
 
   /// Optional stack trace of the technical cause.
   final StackTrace? stackTrace;
-
-  /// Creates a [DomainError].
-  const DomainError({
-    this.message,
-    this.error,
-    this.stackTrace,
-  });
 
   @override
   List<Object?> get props => [
     typeIdentifier,
     message,
-    error,
+    rawError,
     stackTrace,
   ];
-
-  @override
-  String toString() {
-    final detail = _stableDetail;
-    if (detail == null || detail.isEmpty) {
-      return typeIdentifier;
-    }
-    return '$typeIdentifier($detail)';
-  }
 
   String? get _stableDetail {
     final normalizedMessage = message?.trim();
@@ -53,7 +37,7 @@ abstract class DomainError extends Equatable implements Exception {
       return normalizedMessage;
     }
 
-    final cause = error;
+    final cause = rawError;
     if (cause == null) {
       return null;
     }
@@ -66,5 +50,21 @@ abstract class DomainError extends Equatable implements Exception {
       return 'unknown';
     }
     return description.split('\n').first.trim();
+  }
+
+  /// Creates a [DomainError].
+  const DomainError({
+    this.message,
+    this.rawError,
+    this.stackTrace,
+  });
+
+  @override
+  String toString() {
+    final detail = _stableDetail;
+    if (detail == null || detail.isEmpty) {
+      return typeIdentifier;
+    }
+    return '$typeIdentifier($detail)';
   }
 }

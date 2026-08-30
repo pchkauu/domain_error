@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:domain_error/domain_error.dart';
 
-/// Loads an order and prints `value` / `failure` for typical outcomes.
+/// Loads an order and prints `successValue` / `errValue` for typical outcomes.
 void main() async {
   const op = 'main():';
 
@@ -17,26 +17,26 @@ void main() async {
         return loadOrder(id: id);
       },
       options: ExecuteSafelyOptions(
-        mapThrownToError: (error, stackTrace) {
-          if (error is TimeoutException) {
+        mapRawErrorToDomain: (rawError, stackTrace) {
+          if (rawError is TimeoutException) {
             return const OrderTimeoutError();
           } else {
-            return OrderUnavailableError(error: error, stackTrace: stackTrace);
+            return OrderUnavailableError(rawError: rawError, stackTrace: stackTrace);
           }
         },
-        onError: (error, stackTrace) async {
-          print('$op ${error.typeIdentifier} ${error.stackTrace}');
+        onDomainError: (domainError, stackTrace) async {
+          print('$op ${domainError.typeIdentifier} ${domainError.stackTrace}');
         },
-        onThrown: (error, stackTrace) async {
-          print('$op $error $stackTrace');
+        onRawError: (rawError, stackTrace) async {
+          print('$op $rawError $stackTrace');
         },
       ),
     );
 
     print(
       result.fold(
-        (failure) => '$op $failure',
-        (value) => '$op $value',
+        (domainError) => '$op $domainError',
+        (successValue) => '$op $successValue',
       ),
     );
   }
@@ -72,7 +72,7 @@ sealed class OrderError extends DomainError {
 
   const OrderError({
     super.message,
-    super.error,
+    super.rawError,
     super.stackTrace,
   });
 }
@@ -96,7 +96,7 @@ final class OrderUnavailableError extends OrderError {
   String get typeIdentifier => 'OrderUnavailableError';
 
   const OrderUnavailableError({
-    super.error,
+    super.rawError,
     super.stackTrace,
   });
 }
