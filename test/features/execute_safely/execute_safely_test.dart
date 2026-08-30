@@ -9,19 +9,19 @@ void main() {
       final result = await executeSafely<void>(
         () => throw error,
         options: ExecuteSafelyOptions<void>(
-          mapThrownToError: (error, stackTrace) => _TestDomainError(error: error),
+          mapUnexpectedToDomainError: (error, stackTrace) => _TestDomainError(error: error),
         ),
       );
 
-      expect(result.isFailure, isTrue);
-      expect(result.failure, error);
+      expect(result.isFailed, isTrue);
+      expect(result.domainError, error);
     });
 
     test('maps unexpected throw to DomainError', () async {
       final result = await executeSafely<void>(
         () => throw StateError('boom'),
         options: ExecuteSafelyOptions<void>(
-          mapThrownToError: (error, stackTrace) => _TestDomainError(
+          mapUnexpectedToDomainError: (error, stackTrace) => _TestDomainError(
             message: 'mapped error',
             error: error,
             stackTrace: stackTrace,
@@ -29,9 +29,9 @@ void main() {
         ),
       );
 
-      expect(result.isFailure, isTrue);
-      expect(result.failure.typeIdentifier, 'TestDomainError');
-      expect(result.failure.message, 'mapped error');
+      expect(result.isFailed, isTrue);
+      expect(result.domainError.typeIdentifier, 'TestDomainError');
+      expect(result.domainError.message, 'mapped error');
     });
   });
 }

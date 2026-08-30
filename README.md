@@ -10,7 +10,7 @@ result.
 
 ```yaml
 dependencies:
-  domain_error: ^1.0.0
+  domain_error: ^2.0.0
 ```
 
 ## Use
@@ -63,27 +63,27 @@ final result = await executeSafely<Order>(
     return loadOrder(id: id);
   },
   options: ExecuteSafelyOptions(
-    mapThrownToError: (error, stackTrace) {
+    mapUnexpectedToDomainError: (error, stackTrace) {
       if (error is TimeoutException) {
         return const OrderTimeoutError();
       } else {
         return OrderUnavailableError(error: error, stackTrace: stackTrace);
       }
     },
-    onError: (error, stackTrace) { /* log */ },
-    onThrown: (error, stackTrace) { /* log */ },
+    onDomainError: (error, stackTrace) { /* log */ },
+    onUnexpected: (error, stackTrace) { /* log */ },
   ),
 );
 
 result.fold(
-  (failure) => print(failure.typeIdentifier),
-  (value) => print(value.title),
+  (domainError) => print(domainError.typeIdentifier),
+  (executed) => print(executed.title),
 );
 ```
 
 If the function throws a `DomainError`, you get that same object.
-If it throws anything else, you get what `mapThrownToError` returns.
-`onError` and `onThrown` only observe. They do not change the result.
+If it throws anything else, you get what `mapUnexpectedToDomainError` returns.
+`onDomainError` and `onUnexpected` only observe. They do not change the result.
 
 Runnable sample: [`example/domain_error_example.dart`](example/domain_error_example.dart).
 

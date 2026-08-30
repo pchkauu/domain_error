@@ -3,60 +3,63 @@ import 'package:meta/meta.dart';
 
 const DeepCollectionEquality _eitherDeepEq = DeepCollectionEquality();
 
-/// A value that is either a left-hand [failure] or a successful [value].
+/// A value that is either a left-hand [domainError] or a successful [executed].
 @immutable
 abstract class Either<L, R> {
   /// Creates an [Either].
   const Either();
 
-  /// Whether this instance holds a failure.
-  bool get isFailure => this is EitherFailure<L, R>;
+  /// Whether this instance holds a domain error.
+  bool get isFailed => this is EitherDomainError<L, R>;
 
-  /// Whether this instance holds a value.
-  bool get isValue => this is EitherValue<L, R>;
+  /// Whether this instance holds an executed value.
+  bool get isExecuted => this is EitherExecuted<L, R>;
 
-  /// The left side of [Either], which by convention is a failure.
-  L get failure => (this as EitherFailure<L, R>).failure;
+  /// The left side of [Either], which by convention is a domain error.
+  L get domainError => (this as EitherDomainError<L, R>).domainError;
 
   /// The right side of [Either], which by convention is a success.
-  R get value => (this as EitherValue<L, R>).value;
+  R get executed => (this as EitherExecuted<L, R>).executed;
 
-  /// Creates a failure [Either].
-  const factory Either.failure(L failure) = EitherFailure<L, R>;
+  /// Creates a failed [Either].
+  const factory Either.domainError(L domainError) = EitherDomainError<L, R>;
 
   /// Creates a successful [Either].
-  const factory Either.value(R value) = EitherValue<L, R>;
+  const factory Either.executed(R executed) = EitherExecuted<L, R>;
 
-  /// Applies [ifFailure] or [ifValue] depending on the held value.
-  T fold<T>(T Function(L failure) ifFailure, T Function(R value) ifValue) {
-    if (isFailure) {
-      return ifFailure(failure);
+  /// Applies [ifFailed] or [ifExecuted] depending on the held value.
+  T fold<T>(
+    T Function(L domainError) ifFailed,
+    T Function(R executed) ifExecuted,
+  ) {
+    if (isFailed) {
+      return ifFailed(domainError);
     } else {
-      return ifValue(value);
+      return ifExecuted(executed);
     }
   }
 
-  /// Calls [failure] or [value] with this [Either].
+  /// Calls [domainError] or [executed] with this [Either].
   void when({
-    required void Function(Either<L, R> either) failure,
-    required void Function(Either<L, R> either) value,
+    required void Function(Either<L, R> either) domainError,
+    required void Function(Either<L, R> either) executed,
   }) {
-    if (isFailure) {
-      failure(this);
+    if (isFailed) {
+      domainError(this);
     } else {
-      value(this);
+      executed(this);
     }
   }
 
-  /// Maps this [Either] by calling [failure] or [value] with this instance.
+  /// Maps this [Either] by calling [domainError] or [executed] with this instance.
   T map<T>({
-    required T Function(Either<L, R> either) failure,
-    required T Function(Either<L, R> either) value,
+    required T Function(Either<L, R> either) domainError,
+    required T Function(Either<L, R> either) executed,
   }) {
-    if (isFailure) {
-      return failure(this);
+    if (isFailed) {
+      return domainError(this);
     } else {
-      return value(this);
+      return executed(this);
     }
   }
 
@@ -72,44 +75,44 @@ abstract class Either<L, R> {
   int get hashCode => runtimeType.hashCode; // ignore: no_runtimeType_toString
 }
 
-/// [Either] that holds a failure.
+/// [Either] that holds a domain error.
 @immutable
-class EitherFailure<L, R> extends Either<L, R> {
+class EitherDomainError<L, R> extends Either<L, R> {
   @override
-  final L failure;
+  final L domainError;
 
-  /// Creates a failure [Either].
-  const EitherFailure(this.failure);
+  /// Creates a failed [Either].
+  const EitherDomainError(this.domainError);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
-    return other is EitherFailure<L, R> && _eitherDeepEq.equals(other.failure, failure);
+    return other is EitherDomainError<L, R> && _eitherDeepEq.equals(other.domainError, domainError);
   }
 
   @override
-  int get hashCode => _eitherDeepEq.hash(failure);
+  int get hashCode => _eitherDeepEq.hash(domainError);
 }
 
-/// [Either] that holds a value.
+/// [Either] that holds an executed value.
 @immutable
-class EitherValue<L, R> extends Either<L, R> {
+class EitherExecuted<L, R> extends Either<L, R> {
   @override
-  final R value;
+  final R executed;
 
   /// Creates a successful [Either].
-  const EitherValue(this.value);
+  const EitherExecuted(this.executed);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
       return true;
     }
-    return other is EitherValue<L, R> && _eitherDeepEq.equals(other.value, value);
+    return other is EitherExecuted<L, R> && _eitherDeepEq.equals(other.executed, executed);
   }
 
   @override
-  int get hashCode => _eitherDeepEq.hash(value);
+  int get hashCode => _eitherDeepEq.hash(executed);
 }

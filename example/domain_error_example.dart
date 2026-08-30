@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:domain_error/domain_error.dart';
 
-/// Loads an order and prints `value` / `failure` for typical outcomes.
+/// Loads an order and prints `executed` / `domainError` for typical outcomes.
 void main() async {
   const op = 'main():';
 
@@ -17,17 +17,17 @@ void main() async {
         return loadOrder(id: id);
       },
       options: ExecuteSafelyOptions(
-        mapThrownToError: (error, stackTrace) {
+        mapUnexpectedToDomainError: (error, stackTrace) {
           if (error is TimeoutException) {
             return const OrderTimeoutError();
           } else {
             return OrderUnavailableError(error: error, stackTrace: stackTrace);
           }
         },
-        onError: (error, stackTrace) async {
+        onDomainError: (error, stackTrace) async {
           print('$op ${error.typeIdentifier} ${error.stackTrace}');
         },
-        onThrown: (error, stackTrace) async {
+        onUnexpected: (error, stackTrace) async {
           print('$op $error $stackTrace');
         },
       ),
@@ -35,8 +35,8 @@ void main() async {
 
     print(
       result.fold(
-        (failure) => '$op $failure',
-        (value) => '$op $value',
+        (domainError) => '$op $domainError',
+        (executed) => '$op $executed',
       ),
     );
   }

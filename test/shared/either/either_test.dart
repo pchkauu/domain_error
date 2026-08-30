@@ -3,37 +3,37 @@ import 'package:test/test.dart';
 
 void main() {
   group('Either', () {
-    test('value exposes payload and fold branch', () {
-      const result = Either<DomainError, int>.value(7);
+    test('executed exposes payload and fold branch', () {
+      const result = Either<DomainError, int>.executed(7);
 
-      expect(result.isValue, isTrue);
-      expect(result.isFailure, isFalse);
-      expect(result.value, 7);
-      expect(result.fold((failure) => 0, (value) => value), 7);
+      expect(result.isExecuted, isTrue);
+      expect(result.isFailed, isFalse);
+      expect(result.executed, 7);
+      expect(result.fold((domainError) => 0, (executed) => executed), 7);
     });
 
-    test('failure exposes payload and fold branch', () {
+    test('domainError exposes payload and fold branch', () {
       const error = _TestDomainError(message: 'missing');
-      const result = Either<DomainError, int>.failure(error);
+      const result = Either<DomainError, int>.domainError(error);
 
-      expect(result.isFailure, isTrue);
-      expect(result.isValue, isFalse);
-      expect(result.failure, error);
+      expect(result.isFailed, isTrue);
+      expect(result.isExecuted, isFalse);
+      expect(result.domainError, error);
       expect(result.fold((value) => value, (value) => value), error);
     });
 
     test('compares equal when held values match', () {
-      const left = Either<DomainError, String>.value('ok');
-      const right = Either<DomainError, String>.value('ok');
+      const left = Either<DomainError, String>.executed('ok');
+      const right = Either<DomainError, String>.executed('ok');
 
       expect(left, equals(right));
     });
 
     test('can hold a left value that is not a DomainError', () {
-      const result = Either<String, int>.failure('missing');
+      const result = Either<String, int>.domainError('missing');
 
-      expect(result.isFailure, isTrue);
-      expect(result.failure, 'missing');
+      expect(result.isFailed, isTrue);
+      expect(result.domainError, 'missing');
     });
   });
 }

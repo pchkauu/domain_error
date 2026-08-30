@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:domain_error/src/entities/domain_error/domain_error.dart';
 import 'package:domain_error/src/shared/_barrel.dart';
 
-/// An [Either] whose failure side is [DomainError].
+/// An [Either] whose domain-error side is [DomainError].
 typedef Result<T> = Either<DomainError, T>;
 
 /// A [Future] that completes with a [Result].
