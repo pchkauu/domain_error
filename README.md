@@ -1,15 +1,16 @@
-# failure
+# domain_error
 
 Turn thrown errors into values you can fold.
 
-A domain error is a `Failure`. An outcome is a `Result<T>`: `Either<Failure, T>`.
-`executeSafely` runs a function and returns that result.
+A domain error is a `DomainError`. An outcome is a `Result<T>`:
+`Either<DomainError, T>`. `executeSafely` runs a function and returns that
+result.
 
 ## Install
 
 ```yaml
 dependencies:
-  failure: ^1.0.0
+  domain_error: ^1.0.0
 ```
 
 ## Use
@@ -20,9 +21,9 @@ readable after obfuscation.
 ```dart
 import 'dart:async';
 
-import 'package:failure/failure.dart';
+import 'package:domain_error/domain_error.dart';
 
-sealed class OrderError extends Failure {
+sealed class OrderError extends DomainError {
   const OrderError({super.message, super.error, super.stackTrace});
 
   @override
@@ -51,7 +52,7 @@ final class OrderUnavailableError extends OrderError {
 }
 ```
 
-Catch throws. Map unexpected errors. Fold the result.
+Catch throws. Map unexpected objects. Fold the result.
 
 ```dart
 final result = await executeSafely<Order>(
@@ -62,15 +63,15 @@ final result = await executeSafely<Order>(
     return loadOrder(id: id);
   },
   options: ExecuteSafelyOptions(
-    mapErrorToFailure: (error, stackTrace) {
+    mapThrownToError: (error, stackTrace) {
       if (error is TimeoutException) {
         return const OrderTimeoutError();
       } else {
         return OrderUnavailableError(error: error, stackTrace: stackTrace);
       }
     },
-    onFailure: (failure, stackTrace) { /* log */ },
     onError: (error, stackTrace) { /* log */ },
+    onThrown: (error, stackTrace) { /* log */ },
   ),
 );
 
@@ -80,12 +81,12 @@ result.fold(
 );
 ```
 
-If the function throws a `Failure`, you get that same object.
-If it throws anything else, you get what `mapErrorToFailure` returns.
-`onFailure` and `onError` only observe. They do not change the result.
+If the function throws a `DomainError`, you get that same object.
+If it throws anything else, you get what `mapThrownToError` returns.
+`onError` and `onThrown` only observe. They do not change the result.
 
-Runnable sample: [`example/failure_example.dart`](example/failure_example.dart).
+Runnable sample: [`example/domain_error_example.dart`](example/domain_error_example.dart).
 
 ## License
 
-MIT. Issues: https://github.com/pchkauu/failure/issues
+MIT. Issues: https://github.com/pchkauu/domain_error/issues

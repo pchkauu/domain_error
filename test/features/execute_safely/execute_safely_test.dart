@@ -1,28 +1,28 @@
-import 'package:failure/failure.dart';
+import 'package:domain_error/domain_error.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('executeSafely', () {
-    test('returns thrown Failure', () async {
-      const failure = _TestFailure(message: 'handled failure');
+    test('returns thrown DomainError', () async {
+      const error = _TestDomainError(message: 'handled error');
 
       final result = await executeSafely<void>(
-        () => throw failure,
+        () => throw error,
         options: ExecuteSafelyOptions<void>(
-          mapErrorToFailure: (error, stackTrace) => _TestFailure(error: error),
+          mapThrownToError: (error, stackTrace) => _TestDomainError(error: error),
         ),
       );
 
       expect(result.isFailure, isTrue);
-      expect(result.failure, failure);
+      expect(result.failure, error);
     });
 
-    test('maps unexpected error to Failure', () async {
+    test('maps unexpected throw to DomainError', () async {
       final result = await executeSafely<void>(
         () => throw StateError('boom'),
         options: ExecuteSafelyOptions<void>(
-          mapErrorToFailure: (error, stackTrace) => _TestFailure(
-            message: 'mapped failure',
+          mapThrownToError: (error, stackTrace) => _TestDomainError(
+            message: 'mapped error',
             error: error,
             stackTrace: stackTrace,
           ),
@@ -30,19 +30,19 @@ void main() {
       );
 
       expect(result.isFailure, isTrue);
-      expect(result.failure.typeIdentifier, 'TestFailure');
-      expect(result.failure.message, 'mapped failure');
+      expect(result.failure.typeIdentifier, 'TestDomainError');
+      expect(result.failure.message, 'mapped error');
     });
   });
 }
 
-final class _TestFailure extends Failure {
-  const _TestFailure({
+final class _TestDomainError extends DomainError {
+  const _TestDomainError({
     super.message,
     super.error,
     super.stackTrace,
   });
 
   @override
-  String get typeIdentifier => 'TestFailure';
+  String get typeIdentifier => 'TestDomainError';
 }
