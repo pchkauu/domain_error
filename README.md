@@ -4,14 +4,14 @@ Turn thrown errors into values you can fold.
 
 A domain error is a `DomainError`. An outcome is a `Result<T>`:
 `Either<DomainError, T>`. On a `Result`, `domainError` is the failed
-`DomainError`. A generic `Either` uses `errValue`. `executeSafely` runs a
-function and returns that result.
+`DomainError`. A generic `Either` uses `errValue`. `executeSafely` and
+`executeSafelySync` run a function and return that result.
 
 ## Install
 
 ```yaml
 dependencies:
-  domain_error: ^2.0.0
+  domain_error: ^2.1.0
 ```
 
 ## Use
@@ -79,6 +79,15 @@ final result = await executeSafely<Order>(
 result.fold(
   (domainError) => print(domainError.typeIdentifier),
   (successValue) => print(successValue.title),
+);
+
+final syncResult = executeSafelySync<Order>(
+  () => loadOrder(id: id),
+  options: ExecuteSafelySyncOptions(
+    mapRawErrorToDomain: (rawError, stackTrace) {
+      return OrderUnavailableError(rawError: rawError, stackTrace: stackTrace);
+    },
+  ),
 );
 ```
 

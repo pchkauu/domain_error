@@ -40,6 +40,21 @@ void main() async {
       ),
     );
   }
+
+  final syncResult = executeSafelySync<Order>(
+    () => loadOrder(id: '42'),
+    options: ExecuteSafelySyncOptions(
+      mapRawErrorToDomain: (rawError, stackTrace) {
+        return OrderUnavailableError(rawError: rawError, stackTrace: stackTrace);
+      },
+    ),
+  );
+  print(
+    syncResult.fold(
+      (domainError) => '$op sync $domainError',
+      (successValue) => '$op sync $successValue',
+    ),
+  );
 }
 
 /// Reads an order or throws a domain [DomainError] / unexpected error.

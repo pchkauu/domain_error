@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-08-30
+
+### Added
+
+- `executeSafelySync` and `ExecuteSafelySyncOptions` for synchronous calls
+  that return `Result<T>`.
+
 ## [2.0.0] - 2026-08-30
 
 ### Changed
@@ -34,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `executeSafely` to catch throws and return a `Result`.
 - `ExecuteSafelyOptions` with `mapThrownToError`, `onError`, and `onThrown`.
 
-[unreleased]: https://github.com/pchkauu/domain_error/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/pchkauu/domain_error/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/pchkauu/domain_error/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/pchkauu/domain_error/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/pchkauu/domain_error/releases/tag/v1.0.0
