@@ -4,55 +4,58 @@ import 'dart:async';
 
 import 'package:domain_error/domain_error.dart';
 
-/// Loads an order and prints `successValue` / `errValue` for typical outcomes.
-void main() async {
-  const op = 'main():';
+/// Loads an order and prints `successValue` / `errorValue` for typical outcomes.
+Future<void> main() async {
+  const logPrefix = 'main():';
 
   for (final id in ['42', '', 'timeout', 'boom']) {
-    final result = await executeSafely<Order>(
+    final result = await captureResult<Order>(
       () async {
         if (id.isEmpty) {
-          throw const OrderIdEmptyError();
+          throw const EmptyOrderIdError();
         }
         return loadOrder(id: id);
       },
-      options: ExecuteSafelyOptions(
-        mapRawErrorToDomain: (rawError, stackTrace) {
+      options: CaptureResultOptions(
+        mapToDomainError: (rawError, stackTrace) {
           if (rawError is TimeoutException) {
             return const OrderTimeoutError();
           } else {
-            return OrderUnavailableError(rawError: rawError, stackTrace: stackTrace);
+            return OrderUnavailableError(cause: rawError, stackTrace: stackTrace);
           }
         },
         onDomainError: (domainError, stackTrace) async {
-          print('$op ${domainError.typeIdentifier} ${domainError.stackTrace}');
+          print('$logPrefix ${domainError.typeIdentifier} $stackTrace');
         },
         onRawError: (rawError, stackTrace) async {
-          print('$op $rawError $stackTrace');
+          print('$logPrefix $rawError $stackTrace');
+        },
+        onObserverError: (observerError, stackTrace) {
+          print('$logPrefix observer failed: $observerError $stackTrace');
         },
       ),
     );
 
     print(
       result.fold(
-        (domainError) => '$op $domainError',
-        (successValue) => '$op $successValue',
+        (domainError) => '$logPrefix $domainError',
+        (successValue) => '$logPrefix $successValue',
       ),
     );
   }
 
-  final syncResult = executeSafelySync<Order>(
+  final syncResult = captureResultSync<Order>(
     () => loadOrder(id: '42'),
-    options: ExecuteSafelySyncOptions(
-      mapRawErrorToDomain: (rawError, stackTrace) {
-        return OrderUnavailableError(rawError: rawError, stackTrace: stackTrace);
+    options: CaptureResultSyncOptions(
+      mapToDomainError: (rawError, stackTrace) {
+        return OrderUnavailableError(cause: rawError, stackTrace: stackTrace);
       },
     ),
   );
   print(
     syncResult.fold(
-      (domainError) => '$op sync $domainError',
-      (successValue) => '$op sync $successValue',
+      (domainError) => '$logPrefix sync $domainError',
+      (successValue) => '$logPrefix sync $successValue',
     ),
   );
 }
@@ -60,7 +63,7 @@ void main() async {
 /// Reads an order or throws a domain [DomainError] / unexpected error.
 Order loadOrder({required String id}) {
   if (id.trim().isEmpty) {
-    throw const OrderIdEmptyError();
+    throw const EmptyOrderIdError();
   }
   if (id == 'timeout') {
     throw TimeoutException('warehouse timeout');
@@ -87,16 +90,16 @@ sealed class OrderError extends DomainError {
 
   const OrderError({
     super.message,
-    super.rawError,
+    super.cause,
     super.stackTrace,
   });
 }
 
-final class OrderIdEmptyError extends OrderError {
+final class EmptyOrderIdError extends OrderError {
   @override
   String get typeIdentifier => 'OrderIdEmptyError';
 
-  const OrderIdEmptyError();
+  const EmptyOrderIdError();
 }
 
 final class OrderTimeoutError extends OrderError {
@@ -111,7 +114,7 @@ final class OrderUnavailableError extends OrderError {
   String get typeIdentifier => 'OrderUnavailableError';
 
   const OrderUnavailableError({
-    super.rawError,
+    super.cause,
     super.stackTrace,
   });
 }
