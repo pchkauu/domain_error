@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>domain_error: Capture an operation outcome</title>
+  <link rel="stylesheet" href="readme-art.css">
+</head>
+<body>
+  <header class="brand"><span class="logo-mark">D</span>domain_error</header>
+  <div class="page-heading">
+    <h1>Three paths. <span class="accent">One Result.</span></h1>
+    <p>Return values, preserve domain errors, and map other thrown objects at the capture boundary.</p>
+  </div>
+  <main>
+    <div class="route-heading">
+      <h2>Operation outcome</h2>
+      <div class="capture-label"><h2><code>captureResult</code></h2><span>Await callbacks in order</span></div>
+      <h2><code>Result&lt;T&gt;</code></h2>
+    </div>
+    <section aria-label="Operation routes">
+      <div class="route">
+        <div class="route-source"><strong>Value</strong><p><code>T</code> or <code>Future&lt;T&gt;</code></p></div>
+        <div class="connector" aria-hidden="true"></div>
+        <div class="route-action"><code>return value</code><p>No observer or mapper runs.</p></div>
+        <div class="connector" aria-hidden="true"></div>
+        <div class="route-result success"><code>Either.success(value)</code><p>The successful value</p></div>
+      </div>
+      <div class="route">
+        <div class="route-source"><strong>DomainError</strong><p>Expected application error</p></div>
+        <div class="connector" aria-hidden="true"></div>
+        <div class="route-action"><code>onDomainError</code><p>Optional observer; preserve the original error.</p></div>
+        <div class="connector" aria-hidden="true"></div>
+        <div class="route-result"><code>Either.error(error)</code><p>The same error instance</p></div>
+      </div>
+      <div class="route">
+        <div class="route-source"><strong>Other thrown object</strong><p>Any non-domain error</p></div>
+        <div class="connector" aria-hidden="true"></div>
+        <div class="route-action chain">
+          <div><code>onRawError</code><p>Optional observer</p></div>
+          <div class="connector" aria-hidden="true"></div>
+          <div><code>mapToDomainError</code><p>Convert after observing</p></div>
+        </div>
+        <div class="connector" aria-hidden="true"></div>
+        <div class="route-result"><code>Either.error(mapped)</code><p>No extra onDomainError call</p></div>
+      </div>
+    </section>
+    <section class="panel fold-summary">
+      <h2>Then choose.</h2>
+      <code class="fold-expression">result.fold(onError, onSuccess)</code>
+      <p class="small muted">Handle the error or use the value.<br>Only the matching callback runs.</p>
+    </section>
+    <div class="observer-note">
+      <p>Observer failures reach <code>onObserverError</code>.<br>Absent or failing handlers never replace the result.</p>
+      <p>Mapper failures propagate with their stack traces.<br>The same routing applies to <code>captureResultSync</code>.</p>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,147 @@
+/* Static documentation artwork: 1600 x 900, dark theme, no motion.
+   IBM Plex fonts: https://github.com/IBM/plex (license: fonts/OFL.txt). */
+@font-face {
+  font-family: 'Plex Sans';
+  src: url('fonts/IBMPlexSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Plex Sans';
+  src: url('fonts/IBMPlexSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  src: url('fonts/IBMPlexMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+:root {
+  color-scheme: dark;
+  --background: #111a20;
+  --surface: #19262d;
+  --accent-surface: #203b3e;
+  --text: #edf3f2;
+  --muted: #b2c1c6;
+  --accent: #8edbd0;
+  --line: #657c85;
+  --radius: 12px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1600px; height: 900px; overflow: hidden; }
+body {
+  padding: 48px 72px;
+  background: var(--background);
+  color: var(--text);
+  font: 400 22px/1.45 'Plex Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, pre { margin: 0; }
+h1 { font-size: 62px; line-height: 1.12; font-weight: 600; letter-spacing: -2.4px; }
+h2 { font-size: 28px; line-height: 1.25; font-weight: 600; letter-spacing: -.5px; }
+h3 { font-size: 23px; font-weight: 600; }
+code, pre, .mono { font-family: 'Plex Mono', monospace; font-weight: 400; }
+code { font-size: .91em; }
+pre { font-size: 20px; line-height: 1.7; }
+.accent { color: var(--accent); }
+.muted { color: var(--muted); }
+.small { font-size: 19px; line-height: 1.5; }
+.brand { display: flex; align-items: center; gap: 14px; font-size: 24px; font-weight: 600; letter-spacing: -.8px; }
+.logo-mark {
+  display: grid; place-items: center; width: 38px; height: 38px;
+  background: var(--accent); color: var(--background); border-radius: 13px;
+  font-size: 23px;
+}
+.page-heading { margin: 34px 0 30px; }
+.page-heading p { margin-top: 15px; color: var(--muted); }
+.panel { background: var(--surface); border-radius: var(--radius); padding: 26px 28px; }
+.connector { align-self: center; height: 1px; background: var(--line); position: relative; }
+.connector::after {
+  content: ''; position: absolute; right: 0; top: -4px; width: 9px; height: 9px;
+  border-top: 1px solid var(--line); border-right: 1px solid var(--line); transform: rotate(45deg);
+}
+/* Routes share a column grid so every arrow has one unambiguous destination. */
+.route-heading, .route { display: grid; grid-template-columns: 246px 44px 610px 44px 1fr; column-gap: 14px; }
+.route-heading { align-items: end; margin-bottom: 12px; }
+.route-heading > :nth-child(2) { grid-column: 3; }
+.route-heading > :nth-child(3) { grid-column: 5; }
+.route-heading h2 { font-size: 25px; }
+.route-heading .capture-label { display: flex; align-items: baseline; justify-content: space-between; padding-right: 22px; }
+.route-heading .capture-label span { font-size: 18px; color: var(--muted); }
+.route { min-height: 112px; align-items: center; border-bottom: 1px solid var(--line); }
+.route:last-child { border: 0; }
+.route-source strong { display: block; font-size: 24px; font-weight: 600; }
+.route-source p, .route-result p { margin-top: 4px; color: var(--muted); font-size: 18px; }
+.route-action { padding: 20px 22px; background: var(--surface); border-radius: var(--radius); }
+.route-action code { color: var(--accent); font-size: 21px; }
+.route-action p { margin-top: 5px; font-size: 18px; color: var(--muted); }
+.route-action.chain { display: grid; grid-template-columns: auto 28px auto; gap: 12px; align-items: center; }
+.route-result code { font-size: 21px; }
+.route-result.success { color: var(--accent); }
+.fold-summary { margin-top: 26px; display: grid; grid-template-columns: 246px 1fr 1fr; gap: 24px; align-items: center; }
+.fold-summary h2 { color: var(--accent); font-size: 30px; }
+.fold-summary .fold-expression { font-size: 23px; }
+.fold-summary .small { padding-left: 24px; border-left: 1px solid var(--line); }
+.observer-note { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; margin-top: 19px; color: var(--muted); font-size: 18px; }
+.observer-note code { color: var(--text); }
+/* The error model separates value semantics from diagnostic context. */
+.model { display: grid; grid-template-columns: 684px 1fr; gap: 64px; }
+.model-title { display: flex; align-items: baseline; gap: 18px; margin-bottom: 22px; }
+.model-title span { font-size: 18px; color: var(--muted); }
+.model-title code { font-size: 29px; }
+.field-group { padding: 18px 26px; background: var(--surface); border-radius: var(--radius); }
+.field-group + .field-group { margin-top: 18px; }
+.field-group.compared { background: var(--accent-surface); }
+.field-group h3 { margin-bottom: 12px; }
+.field-group.compared h3 { color: var(--accent); }
+.field { display: grid; grid-template-columns: 218px 1fr; gap: 12px; padding: 4px 0; align-items: baseline; }
+.field code { font-size: 21px; }
+.field p { color: var(--muted); font-size: 19px; }
+.equality-note { margin-top: 19px; font-size: 19px; color: var(--muted); }
+.equality-note code { color: var(--accent); }
+.hierarchy h2 { margin-bottom: 22px; }
+.feature-root { background: var(--surface); padding: 23px 28px; border-radius: var(--radius); }
+.feature-root code { color: var(--accent); font-size: 24px; }
+.feature-root p { margin-top: 3px; color: var(--muted); font-size: 18px; }
+.subtypes { margin-left: 29px; padding-left: 35px; }
+.subtype { position: relative; padding: 19px 0 0; }
+.subtype::before { content: ''; position: absolute; width: 35px; height: 1px; top: 37px; left: -35px; background: var(--line); }
+.subtype::after { content: ''; position: absolute; width: 1px; top: 0; bottom: -19px; left: -35px; background: var(--line); }
+.subtype:last-child::after { bottom: auto; height: 37px; }
+.subtype code { font-size: 22px; }
+.subtype p { color: var(--muted); font-size: 18px; margin-top: 3px; }
+.identity-note { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
+.identity-note h3 { font-size: 23px; margin-bottom: 5px; }
+.identity-note p { color: var(--muted); font-size: 18px; }
+.identity-note code { color: var(--accent); font-size: 20px; }
+/* The API sheet uses a compact comparison, branch reference and real Dart examples. */
+.capture-apis { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 30px; }
+.capture-api { padding: 18px 0 21px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.capture-api div { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; }
+.capture-api h2 code { font-size: 25px; }
+.capture-api .return-type { color: var(--accent); font-size: 21px; }
+.capture-api p { color: var(--muted); font-size: 18px; margin-top: 8px; }
+.result-workspace { display: grid; grid-template-columns: 668px 1fr; gap: 52px; }
+.result-definition { margin-bottom: 19px; }
+.result-definition h2 { font-size: 37px; margin-bottom: 5px; }
+.result-definition > code { font-size: 23px; color: var(--muted); }
+.branches { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.branch { padding: 24px; border-radius: var(--radius); background: var(--surface); }
+.branch.success { background: var(--accent-surface); }
+.branch h3 { font-size: 20px; margin-bottom: 19px; }
+.branch.success h3 { color: var(--accent); }
+.branch p { font-family: 'Plex Mono', monospace; font-size: 18px; line-height: 1.8; }
+.branch .branch-alias { margin-top: 8px; color: var(--muted); font: 17px/1.5 'Plex Sans', sans-serif; }
+.getter-note { font-size: 18px; color: var(--muted); margin-top: 17px; }
+.methods h2 { font-size: 26px; margin-bottom: 13px; }
+.methods h2 code { color: var(--accent); }
+.fold-code { font-size: 22px; padding: 18px 22px; background: var(--surface); border-radius: var(--radius); }
+.methods .map-heading { margin-top: 27px; }
+.map-line { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; margin-top: 14px; }
+.map-line pre { font-size: 18px; }
+.map-line > code { color: var(--accent); font-size: 22px; }
+.map-note { margin-top: 5px; color: var(--muted); font-size: 18px; }
+.payload-note { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 27px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 18px; color: var(--muted); }
+.payload-note code { color: var(--text); }

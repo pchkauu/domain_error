@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>domain_error: Domain error model</title>
+  <link rel="stylesheet" href="readme-art.css">
+</head>
+<body>
+  <header class="brand"><span class="logo-mark">D</span>domain_error</header>
+  <div class="page-heading">
+    <h1>Model what <span class="accent">the error means.</span></h1>
+    <p>Separate domain identity from diagnostic context. Keep one sealed error root per feature.</p>
+  </div>
+  <main>
+    <div class="model">
+      <section>
+        <div class="model-title"><h2><code>DomainError</code></h2><span>abstract base class</span></div>
+        <div class="field-group compared">
+          <h3>Value equality</h3>
+          <div class="field"><code>typeIdentifier</code><p>Stable reporting identifier</p></div>
+          <div class="field"><code>message</code><p>Human-readable description</p></div>
+        </div>
+        <div class="field-group">
+          <h3>Diagnostic context</h3>
+          <div class="field"><code>cause</code><p>Optional technical cause</p></div>
+          <div class="field"><code>stackTrace</code><p>Optional diagnostic trace</p></div>
+        </div>
+        <p class="equality-note">Equality also requires the same concrete type.<br>Add business fields with <code>[...super.props, field]</code>.</p>
+      </section>
+      <section class="hierarchy">
+        <h2>One sealed root per feature</h2>
+        <div class="feature-root"><code>sealed class OrderError</code><p>extends DomainError</p></div>
+        <div class="subtypes">
+          <div class="subtype"><code>EmptyOrderIdError</code><p>Empty order identifier</p></div>
+          <div class="subtype"><code>OrderTimeoutError</code><p>Expected timeout</p></div>
+          <div class="subtype"><code>OrderUnavailableError</code><p>Mapped technical cause</p></div>
+        </div>
+      </section>
+    </div>
+    <section class="identity-note">
+      <div><h3>Rename the class. Keep the identifier.</h3><p>Preserve typeIdentifier values through renames and obfuscation. Diagnostic fields never affect equality or hashing.</p></div>
+      <code>'OrderIdEmptyError'</code>
+    </section>
+  </main>
+</body>
+</html>
