@@ -1,9 +1,9 @@
 SHELL := /bin/sh
 
-.PHONY: help deps format format-check analyze test check publish-dry-run
+.PHONY: help deps format format-check analyze test check publish-dry-run diagrams
 
 help:
-	@echo "failure package commands"
+	@echo "domain_error package commands"
 	@echo ""
 	@echo "  make deps"
 	@echo "  make format"
@@ -12,6 +12,7 @@ help:
 	@echo "  make test"
 	@echo "  make check"
 	@echo "  make publish-dry-run"
+	@echo "  make diagrams"
 
 deps:
 	dart pub get
@@ -20,7 +21,7 @@ format:
 	dart format lib test example
 
 format-check:
-	dart format --set-exit-if-changed lib test example
+	dart format --output=none --set-exit-if-changed lib test example
 
 analyze:
 	dart analyze --fatal-infos
@@ -32,3 +33,6 @@ check: format-check analyze test
 
 publish-dry-run:
 	dart pub publish --dry-run
+
+diagrams:
+	./tool/render_diagrams.sh
