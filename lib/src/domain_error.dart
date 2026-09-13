@@ -4,67 +4,65 @@ import 'package:equatable/equatable.dart';
 ///
 /// Feature error roots extend [DomainError] in their own libraries. Keep this
 /// type as an `abstract class` so those roots can live outside this file.
+/// [typeIdentifier] remains readable after obfuscation.
 ///
-/// [typeIdentifier] stays stable after obfuscation and is the primary label
-/// for logs and error reporting.
+/// Equality includes the concrete type, [typeIdentifier], and [message].
+/// [cause] and [stackTrace] are diagnostic context and do not affect equality.
+/// Add business fields in subclasses with `[...super.props, field]`.
 abstract class DomainError extends Equatable implements Exception {
-  /// Stable identifier of the concrete error type.
+  /// Stable identifier used in logs and error reporting.
   ///
-  /// Used to display the error after obfuscation, for example in Sentry.
-  /// Example: `typeIdentifier => 'SignatureError'`.
+  /// Keep its value unchanged even when renaming the Dart class.
   String get typeIdentifier;
 
   /// Optional human-readable description.
   final String? message;
 
-  /// Optional technical cause.
-  final Object? rawError;
+  /// Optional technical cause, including a nested [DomainError].
+  final Object? cause;
 
   /// Optional stack trace of the technical cause.
   final StackTrace? stackTrace;
 
   @override
-  List<Object?> get props => [
-    typeIdentifier,
-    message,
-    rawError,
-    stackTrace,
-  ];
+  List<Object?> get props => [typeIdentifier, message];
 
-  String? get _stableDetail {
-    final normalizedMessage = message?.trim();
-    if (normalizedMessage != null && normalizedMessage.isNotEmpty) {
-      return normalizedMessage;
+  String? get _displayDetail {
+    final description = _firstLine(message ?? '');
+    if (description.isNotEmpty) {
+      return description;
     }
 
-    final cause = rawError;
-    if (cause == null) {
+    final error = cause;
+    if (error == null) {
       return null;
     }
-    if (cause is DomainError) {
-      return cause.typeIdentifier;
-    }
 
-    final description = cause.toString().trim();
-    if (description.isEmpty || description.startsWith('Instance of ')) {
+    try {
+      if (error is DomainError) {
+        return error.typeIdentifier;
+      }
+      final detail = _firstLine(error.toString());
+      if (detail.isEmpty || detail.startsWith('Instance of ')) {
+        return 'unknown';
+      }
+      return detail;
+    } on Object {
       return 'unknown';
     }
-    return description.split('\n').first.trim();
   }
 
   /// Creates a [DomainError].
-  const DomainError({
-    this.message,
-    this.rawError,
-    this.stackTrace,
-  });
+  const DomainError({this.message, this.cause, this.stackTrace});
 
   @override
   String toString() {
-    final detail = _stableDetail;
+    final detail = _displayDetail;
     if (detail == null || detail.isEmpty) {
       return typeIdentifier;
     }
     return '$typeIdentifier($detail)';
   }
 }
+
+String _firstLine(String value) => value.trim().split(RegExp(r'\r\n?|\n')).first.trim();

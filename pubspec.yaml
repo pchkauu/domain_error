@@ -1,6 +1,6 @@
 name: domain_error
-description: Domain errors with Either, Result, and executeSafely for expected errors in Dart applications.
-version: 2.1.1
+description: Domain errors with Either, Result, and captureResult for expected errors in Dart applications.
+version: 3.0.0
 repository: https://github.com/pchkauu/domain_error
 homepage: https://github.com/pchkauu/domain_error
 issue_tracker: https://github.com/pchkauu/domain_error/issues
@@ -9,7 +9,7 @@ topics:
   - domain
   - exceptions
 screenshots:
-  - description: The complete journey from method outcome through executeSafely to fold.
+  - description: The complete journey from operation outcome through captureResult to fold.
     path: assets/overview.png
   - description: DomainError fields, feature hierarchy, and stable type identifiers.
     path: assets/flow.png

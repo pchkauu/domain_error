@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-09-13
+
+### Changed
+
+- Rename the capture functions and options to `captureResult`,
+  `captureResultSync`, `CaptureResultOptions`, and `CaptureResultSyncOptions`.
+- Use `Either.error` / `Either.success`, `EitherError` / `EitherSuccess`,
+  `isError` / `isSuccess`, and `errorValue` throughout the API.
+- Rename `DomainError.rawError` to `cause` and `mapRawErrorToDomain` to
+  `mapToDomainError`. Previous public names are removed without aliases.
+- Require matching concrete types and symmetric deep payload equality for
+  `Either`; include the concrete type in hashing.
+- Exclude causes and stack traces from `DomainError` equality. Subclasses can
+  continue adding business fields through `props`.
+- Preserve operation results when observers fail. Mapper failures still propagate.
+- Normalize message and cause descriptions to one line and use `unknown` when
+  a cause cannot be described.
+- Make `format-check` read-only and simplify analyzer configuration while
+  preserving applicable checks and strict type settings.
+
+### Added
+
+- Optional `onObserverError` handlers for synchronous and asynchronous capture.
+  Handler failures are ignored without recursion.
+- Regression tests for equality, callback ordering, delayed failures, immutable
+  snapshots, and diagnostic formatting.
+- Migration instructions and explicit synchronous callback requirements.
+- Editable HTML/CSS diagram sources with a headless Chrome rendering command.
+- CI checks for Dart 3.13.0 and the stable channel.
+
 ## [2.1.1] - 2026-08-30
 
 ### Added
@@ -47,7 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `executeSafely` to catch throws and return a `Result`.
 - `ExecuteSafelyOptions` with `mapThrownToError`, `onError`, and `onThrown`.
 
-[unreleased]: https://github.com/pchkauu/domain_error/compare/v2.1.1...HEAD
+[3.0.0]: https://github.com/pchkauu/domain_error/compare/v2.1.1...v3.0.0
+[unreleased]: https://github.com/pchkauu/domain_error/compare/v3.0.0...HEAD
 [2.1.1]: https://github.com/pchkauu/domain_error/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/pchkauu/domain_error/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/pchkauu/domain_error/compare/v1.0.0...v2.0.0

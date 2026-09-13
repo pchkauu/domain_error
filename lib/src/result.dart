@@ -10,5 +10,5 @@ typedef FutureResult<T> = Future<Result<T>>;
 /// Reads the [DomainError] from a failed [Result].
 extension ResultDomainError<T> on Result<T> {
   /// The domain error held by this [Result].
-  DomainError get domainError => errValue;
+  DomainError get domainError => errorValue;
 }
